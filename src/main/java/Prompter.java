@@ -1,10 +1,8 @@
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
-//import java.io.Console;
 
 public class Prompter {
-//  private Console mConsole = System.console();
   private BufferedReader mIn = new BufferedReader(new InputStreamReader(System.in));
 
   public Jar setupGame() throws IOException {
@@ -39,35 +37,36 @@ public class Prompter {
     System.out.printf("The jar can hold up to %d %s.\n\n", 
                       jar.getMaxFit(),
                       jar.getTypeOfItems());
-    
     return jar;
   }
   
-  public void play(Jar jar) throws IOException {
-    int guessStatus = -1;
-    int guess = -1;
-    int tries = 0;
-    System.out.printf("How many %s are in the jar? Pick a number between 1 and %d:  ", 
-                      jar.getTypeOfItems(),
-                      jar.getMaxFit());
-    while (guessStatus != 0) {
-      try {
-        guess = Integer.parseInt(mIn.readLine());
-        try {      
-          guessStatus = jar.makeGuess(guess);
-          tries++;
-          if (guessStatus > 0) {
-            System.out.printf("Your guess is too high. Please try again:  ");
-          } else if (guessStatus < 0) {
-            System.out.printf("Your guess is too low. Please try again:  ");
-          }
-        } catch (IllegalArgumentException iae){
-        System.out.printf("%s. Please try again:  ", iae.getMessage());
-      }
-      } catch (IllegalArgumentException iae) {
-        System.out.printf("Your guess is not an integer. Please try again:  ");
-      }
+  public void promptGuess(Jar jar, int guessStatus, String exception) throws IOException {
+    // show too low prompt (-2)
+    // show exception prompt (-1)
+    // show first prompt (1)
+    // show too high prompt (2)
+    if (guessStatus == -2) {
+      System.out.printf("Your guess is too low. Please try again:  ");
+    } else if (guessStatus == -1) {
+      System.out.printf("%s. Please try again:  ", exception);
+    } else if (guessStatus == 1) {
+      System.out.printf("How many %s are in the jar? Pick a number between 1 and %d:  ", 
+                        jar.getTypeOfItems(),
+                        jar.getMaxFit());
+    } else if (guessStatus == 2) {
+      System.out.printf("Your guess is too high. Please try again:  ");
     }
+  }
+  
+  public int getGuess() throws IOException {
+    try {
+      return Integer.parseInt(mIn.readLine());
+    } catch (IllegalArgumentException iae) {
+      throw new IllegalArgumentException("Your guess is not an integer");
+    }
+  }
+
+  public void showCongratulations(Jar jar, int tries, int guess) {
     if (tries == 1) {
       System.out.printf("\n\nWOW! There are %d %s in the jar. You got it in 1 attempt! Lucky guess.\n\n",
                         guess, jar.getTypeOfItems());
@@ -76,5 +75,4 @@ public class Prompter {
                         guess, jar.getTypeOfItems(), tries);
     }
   }
- 
-}
+}    
