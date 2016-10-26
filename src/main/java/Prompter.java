@@ -1,26 +1,31 @@
-import java.io.Console;
-  
-public class Prompter {
-  private Console mConsole = System.console();
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.io.IOException;
+//import java.io.Console;
 
-  public Jar setupGame() {
+public class Prompter {
+//  private Console mConsole = System.console();
+  private BufferedReader mIn = new BufferedReader(new InputStreamReader(System.in));
+
+  public Jar setupGame() throws IOException {
     String typeOfItems = "";
     int maxFit = 0;
-    
+        
     System.out.print("\033[H\033[2J");
     System.out.println("\n\n");
     System.out.println("    Game Setup\n    ==========\n");
-    while (typeOfItems.length() == 0) {  
-      typeOfItems = mConsole.readLine("What type of item?  ");
+    while (typeOfItems.length() == 0) {
+      System.out.printf("What type of item?  ");
+      typeOfItems = mIn.readLine();
       if (typeOfItems.length() == 0 ) {
         System.out.println("\nYou have to put something in the jar.\n");
       }
     }
     while (maxFit < 1) {
       try {
-        maxFit = Integer.parseInt(mConsole.readLine("What is the maximum amount of " 
-                                                    + typeOfItems 
-                                                    + "?  "));
+        System.out.printf("What is the maximum amount of "
+                          + typeOfItems + "?  ");
+        maxFit = Integer.parseInt(mIn.readLine());
       } catch (IllegalArgumentException iae) {
       }
       if (maxFit < 1) {
@@ -38,7 +43,7 @@ public class Prompter {
     return jar;
   }
   
-  public void play(Jar jar) {
+  public void play(Jar jar) throws IOException {
     int guessStatus = -1;
     int guess = -1;
     int tries = 0;
@@ -47,7 +52,7 @@ public class Prompter {
                       jar.getMaxFit());
     while (guessStatus != 0) {
       try {
-        guess = Integer.parseInt(mConsole.readLine());
+        guess = Integer.parseInt(mIn.readLine());
         try {      
           guessStatus = jar.makeGuess(guess);
           tries++;
